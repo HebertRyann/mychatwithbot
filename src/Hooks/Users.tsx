@@ -3,10 +3,21 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { io, Socket } from 'socket.io-client';
 import { v4 } from 'uuid';
 
+interface UpdatedUser {
+  name: string;
+  heart: []
+}
+
+interface HeartProps {
+  key: string;
+}
+
 interface User {
   id?: string;
   name?: string | undefined;
   color?: string;
+  answerCorrect?: number;
+  heart?: HeartProps[];
 }
 
 // interface UserTyping {
@@ -16,6 +27,7 @@ interface User {
 
 interface UserContextProps {
   user: User | undefined;
+  answerCorrects: number;
   usersData: User[];
   newSocket: Socket | undefined;
   addUser(data: User): void;
@@ -26,6 +38,7 @@ const UserContext = createContext<UserContextProps | null>(null);
 
 const UsersProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User>();
+  const [answerCorrects, setAnswerCorrects] = useState(0);
   // const [otherUserIsTyping, setOtherUserIsTyping] = useState<UserTyping>();  
   const [usersData, setUsersData] = useState<User[]>(() => {
     const storagedUsersData = localStorage.getItem('@Users:UserData');
@@ -37,8 +50,7 @@ const UsersProvider: React.FC = ({ children }) => {
   const [newSocket, setNewSocket] = useState<Socket | undefined>();
   
   useEffect(() => {
-    const socket = io('http://localhost:3333', {
-    });
+    const socket = io('http://localhost:3333');
     setNewSocket(socket);
   }, []);
 
@@ -50,6 +62,23 @@ const UsersProvider: React.FC = ({ children }) => {
     newSocket?.on('users', (users: User[]) => {
       setUsersData(users);
     });
+  },[newSocket, usersData]);
+
+  useEffect(() => {
+    newSocket?.on('updatedUser', ({ name, heart }: UpdatedUser) => {
+      const findUser = usersData.find(user => user.name === name);
+      if(findUser) {
+        setUsersData(usersData.map(user => user.name === name ? { ...user, heart, } : user));
+      }
+    });
+  },[newSocket, usersData]);
+
+  
+
+  useEffect(() => {
+    newSocket?.on('answerCorrects', (answerCorrects: number) => {
+      setAnswerCorrects(answerCorrects);
+    });
   },[newSocket]);
 
   useEffect(() => {
@@ -57,7 +86,7 @@ const UsersProvider: React.FC = ({ children }) => {
   },[usersData]);
 
   return (
-    <UserContext.Provider value={{ user, usersData, addUser, newSocket }} >
+    <UserContext.Provider value={{ user, usersData, addUser, newSocket, answerCorrects }} >
       {children}
     </UserContext.Provider>
   );
