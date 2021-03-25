@@ -1,4 +1,5 @@
 import styled, { css, keyframes } from 'styled-components';
+import { animated } from 'react-spring';
 
 interface MyMessageProps {
   isAnswer?: boolean;
@@ -8,6 +9,10 @@ interface OtherMessageProps {
 }
 interface scrollProps {
   isScroll?: boolean;
+}
+
+interface VideoSearchProps {
+  isShow?: boolean;
 }
 
 const mercuryTypingAnimation = keyframes`
@@ -22,6 +27,24 @@ const mercuryTypingAnimation = keyframes`
   44% {
     transform: translateY(0px);
     /* background-color: #BF00FF; //rgba(20,105,69,.2); */
+  }
+`;
+
+const leftToRightVideo = keyframes`
+  0% {
+    transform: translateX(-400px);
+  }
+  100% {
+    transform: translateX(5px);
+  }
+`;
+
+const CloseVideo = keyframes`
+  0% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(-400px);
   }
 `;
 const winnerStretch = keyframes`
@@ -45,18 +68,26 @@ const winnerStretch = keyframes`
 
 `;
 
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   height: 100vh;
 `;
 
 export const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 900px;
+  height: 95vh;
   padding-bottom: 30px;
   overflow: auto;
+  @media(max-height: 600px) {
+    height: 91.5vh;
+  }
+  @media(max-height: 992px) {
+    height: 92vh;
+  }
 `;
 
 export const SendMessage = styled.div`
@@ -103,9 +134,8 @@ export const ContentMyMessage = styled.div<MyMessageProps>`
   justify-content: center;
   background-color: #b3ffb3;
   border-radius: 5px;
-  min-height: 70px;
+  min-height: 75px;
   min-width: 150px;
-  max-width: 50%;
   overflow: hidden;
   word-wrap: break-word;
   word-break: break-all;
@@ -120,10 +150,10 @@ export const OtherMessageContainer = styled.div`
   border-radius: 5px;
   
   ${MyMessageContainer} + & {
-    margin: 30px 0;
+    margin: 45px 0;
   }
   & + div {
-    margin-top: 20px;
+    margin-top: 10px;
   }
   div.chat-bubble {
     padding:16px 28px;
@@ -180,11 +210,15 @@ export const ContentOtherMessage = styled.div<OtherMessageProps>`
   background: #cce6ff;
   padding: 10px;
   min-width: 150px;
-  max-width: 50%;
+  min-height: 75px;
   span {
     margin-bottom: 5px;
     font-size: 14px;
     text-transform: capitalize;
+    word-break: break-all;
+  }
+  p {
+    word-break: break-word;
   }
   ${props => props.isAnswer && css`
       animation: ${winnerStretch} 5s ease-in-out;
@@ -205,6 +239,13 @@ export const SystemMessageContainer = styled.div`
     border-radius: 5px;
     padding: 0 10px;
     color: #fff;
+    span {
+      display: flex;
+      align-items: center;
+      p {
+        font-size: 18px;
+      }
+    }
   }
 `;
 
@@ -270,5 +311,131 @@ export const ContentPassword = styled.div<scrollProps>`
       background: rgba(0,0,0,.1);
     }
   `}
+`;
+
+export const ContainerVideoSearch = styled(animated.div)`
+  display: flex;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  width: 400px;
+  height: 250px;
+  top: 35%;
+  @media(max-width: 992px) {
+    width: 336px;
+    height: 230px; 
+    top: 33%;
+  }
+`;
+
+export const ContentVideoSearch = styled.div`
+  display: flex;
+  align-items: center;
+  flex: 1;
+  svg {
+    position: absolute;
+    right: -21.5px;
+  }
+  @media(max-width: 992px) {
+    iframe {
+      width: 300px;
+      height: 200px;
+    }
+  }
+`;
+
+export const ContainerSoftVideoSearch = styled(animated.div)`
+    display: flex;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.6);
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+    visibility: visible;
+    top: 45%;
+    left: 5px;
+    svg {
+      visibility: visible;
+    }
+    @media(max-width: 992px) {
+      top: 47.5%
+    }
+`;
+
+export const ContainerModal = styled.div`
+  background: #fff;
+  border-radius: 8px;
+  height: 350px;
+  width: 340px;
+  position: absolute;
+  top: 35%;
+`;
+
+export const ContainerModalQuest = styled.div`
+  background: #fff;
+  border-radius: 8px;
+  height: 350px;
+  width: 340px;
+  position: absolute;
+  top: 35%;
+`;
+
+export const OverlayModal = styled.div`
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  background: rgba(0,0,0,.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const ContentModal = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  p {
+    font-size: 1.7rem;
+  }
+  .Containerbutton {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    button {
+      height: 60px;
+      width: 40%;
+      border-radius: 5px;
+
+      font-size: 18pt;
+    }
+  }
+`;
+export const ContentModalQuest = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 5px;
+  div {
+    display: flex;
+    flex-direction: column;
+    height: 70%;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 10px;
+    h3 {
+      display: flex;
+      align-items: center;
+    }
+  }
 `;
 

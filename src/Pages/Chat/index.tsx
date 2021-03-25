@@ -1,8 +1,16 @@
 import React, { HtmlHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
-import { io } from 'socket.io-client';
 import {
   FaHeart,
   MdSend,
+  BiMusic,
+  FiArrowLeftCircle,
+  RiArrowDropLeftFill,
+  RiArrowDropLeftLine,
+  IoMdArrowDropleft,
+  IoMdArrowDropleftCircle,
+  FiHeart,
+  FaTrophy,
+  FaSlack,
 } from 'react-icons/all';
 import {
   Container,
@@ -18,11 +26,23 @@ import {
   ContentHp,
   ContainerPassword,
   ContentPassword,
+  ContainerVideoSearch,
+  ContentVideoSearch,
+  ContainerSoftVideoSearch,
+  ContainerModal,
+  ContentModal,
+  OverlayModal,
+  ContainerModalQuest,
+  ContentModalQuest,
 } from './styles';
 import Input from '../../Components/Input';
 import { useUser } from '../../Hooks/Users';
 import { useHistory } from 'react-router-dom';
 import { useBot } from '../../Hooks/Bot';
+import api from '../../service/youtubeApi';
+import { useSpring } from 'react-spring';
+import Conffeti from 'react-confetti';
+import { useWindowSize } from 'react-use';
 
 interface MessageProps {
   botName?: string;
@@ -32,11 +52,64 @@ interface MessageProps {
   messageWinners?: string[];
   color?: string;
   answer?: boolean;
+  destination?: string;
 }
 
 interface UserTyping {
-  name: string | undefined;
+  name: string;
   isTyping: boolean;
+}
+
+interface itemsVideosProps {
+  id: {
+    videoId: string;
+  };
+}
+
+interface YoutubeSearchProps {
+  items: itemsVideosProps[];
+}
+
+interface UserPlay {
+  name: string;
+  isPlay: boolean;
+  color: string;
+}
+
+interface ThemeProps {
+  quests: {
+    question: string;
+    tips: string[];
+    answer: string;
+  }[]
+}
+interface QuestProps {
+  question: string;
+  tips: string[];
+  answer: string;
+}
+
+interface User {
+  id: string;
+  name: string;
+  color: string;
+  answerCorrect: number;
+  isTyping: boolean;
+}
+
+interface HeartProps {
+  key: string;
+}
+
+interface HeartHangmanProps {
+  name: string;
+  heart: HeartProps[];
+  isPLay: boolean;
+  color: string;
+}
+interface EmojiProps {
+  question: string[];
+  answer: string[];
 }
 
 
@@ -44,8 +117,8 @@ interface UserTyping {
 const Chat: React.FC = () => {
   const messageInputRef = useRef<HTMLInputElement>(null);
   const lastMessageRef = useRef<HTMLInputElement>(null);
-  const chatRef = useRef<Event>(null);
   const [inputValue, setInputValue] = useState('');
+  const [videoId, setVideoid] = useState('');
   const [answerEmojis, setAnswerEmojis] = useState<string[][]>(() => {
     const storagedAnswerEmojis = localStorage.getItem('@AnswerEmojis');
     if(storagedAnswerEmojis) {
@@ -92,10 +165,30 @@ const Chat: React.FC = () => {
     ];
   });
   const [passwrodHang, setPasswordHang] = useState(['']);
-  const [key, setKey] = useState<string[]>([]);
+  const [correctLetter, setCorrectLetter] = useState<string[]>([]);
   const [nextWordIsHang, setNextWordIsHang] = useState(false);
+  const [videoShow, setVideoShow] = useState(false);
+  const propsAnimation = useSpring({
+    left: videoShow ? 5 : -450,
+    from: {
+      left: videoShow ? -450 : 5,
+    }
+  });
+  const videoSoftPropsStyle = useSpring({
+    opacity: videoShow ? 0 : 1,
+    from: {
+      opacity: videoShow ?  1 : 0,
+    }
+  });
   const [activeGameForca, setActiveGameForca] = useState(false);
+  const [activeGameAnswerAndQuest, setActiveGameAnswerAndQuest] = useState(false);
   const [isScroll, setIsScroll] = useState(false);
+  const [isEndingGameForca, setIsEndingGameForca] = useState(false);
+  const [isEndingGameEmojis, setIsEndingGameEmojis] = useState(false);
+  const [isEndingGameQuest, setIsEndingGameQuest] = useState(false);
+  const [isOpeModal, setIsOpeModal] = useState(false);
+  const [isOpeModalActiveGameQuest, setIsOpeModalActiveGameQuest] = useState(false);
+  const [allDone, setAllDone] = useState(false);
   const [otherUserIsTyping, setOtherUserIsTyping] = useState<UserTyping[]>([]); 
   const [messages, setMessages] = useState<MessageProps[]>(() => {
     const storagedMessages = localStorage.getItem('@Chat:Messages');
@@ -105,8 +198,16 @@ const Chat: React.FC = () => {
     return [];
   });
   const [systemMessages, setSystemMessages] = useState<MessageProps[]>([]);
+  const [currentTheme, setCurrentTheme] = useState<ThemeProps>();
+  const [currentQuestion, setCurrentQuestion] = useState<QuestProps>();
+  const [currentThemeIndex, setCurrentThemeIndex] = useState<number[]>([]);
+  const [usersWinners, setUsersWinners] = useState<User[]>([]);
+  const [divinationEmoji, setDivinationEmoji] = useState<EmojiProps>();
+  const [activeGameEmoji, setActiveGameEmoji] = useState(false);
+  const { width, height } = useWindowSize();
+  const toggleVideoShow = () => setVideoShow(!videoShow);
   
-  const { user, newSocket, usersData, answerCorrects } = useUser();
+  const { user, newSocket, usersData, heartsForHangman } = useUser();
   const divinationsWithEmojisMovies = [
     [
       '🌙🚲👉👈👽',
@@ -220,7 +321,8 @@ const Chat: React.FC = () => {
       'eu escolho',
       'eu preferio escolher',
       'eu gostaria de escolher',
-      
+      'eu quero escolher',
+      'quero escolher',
     ],
     [
       'pode escolher',
@@ -228,16 +330,29 @@ const Chat: React.FC = () => {
       'você escolhe',
     ],
     [
+      'quero jogar',
+      'de novo',
+      'outra vez',
+    ],
+    [
       'filme',
       'serie',
       'musica',
-      'forca',
-      'perguntas e respostas',
     ],
     [
      'jogar',
      'jogos',
      'jogo'
+    ],
+    [
+      'toque a musica',
+      'coloque a musica',
+      'tocar',
+      'colocar',
+      'coloque',
+      'toque',
+      'ouvir',
+      'quero ouvir',
     ],
   ]
   const words = [
@@ -296,22 +411,67 @@ const Chat: React.FC = () => {
     'Monóxido de Carbono',
     'Sulfeto de hidrogênio',
   ]
+  const themes = [
+    {
+      themeName: 'historia',
+      quests: [
+        {
+          question: 'De onde é a invenção do chuveiro elétrico?',
+          tips: [''],
+          answer: 'certo',
+        },
+        {
+          question: 'Qual o nome do presidente do Brasil que ficou conhecido como Jango?',
+          tips: [''],
+          answer: 'certo',
+        },
+        {
+          question: 'Quais as duas datas que são comemoradas em novembro?',
+          tips: [''],
+          answer: 'certo',
+        },
+      ]
+    },
+    {
+      themeName: 'biologia',
+      quests: [
+        {
+          question: 'Normalmente, quantos litros de sangue uma pessoa tem? Em média, quantos são retirados numa doação de sangue?',
+          tips: [''],
+          answer: 'certo1',
+        },
+        {
+          question: 'O cavalo-marinho é um mamífero?',
+          tips: [''],
+          answer: 'certo1',
+        },
+        {
+          question: 'Qual a planta que armazena água em seus caules e consegue sobreviver em solos arenosos?',
+          tips: [''],
+          answer: 'certo1',
+        },
+      ]
+    },
+  ]
 
-  const handleSendMessage = useCallback((event) => {
-
+  const handleSendMessage = useCallback(async (event) => {
+    
     const messageValue = messageInputRef.current?.value;
+    if(!messageValue) return
 
-    if(messageValue === 'fefogo') {
-      setActiveGameForca(true);
-      setPasswordHang('fogo'.split(''));
-      setInputValue('');
+    if(botResources[6].some(item => messageValue.includes(item)) && messageValue) {
+      const messageValueSplited = messageValue.split(' ');
+      const messageValueFilter = messageValueSplited.find(word => botResources[6].find(item => item !== word))
+      const searchMusic = messageValueSplited.filter(word => word !== messageValueFilter).join(' ')
+      console.log(messageValueFilter, searchMusic)
+      searchYoutube(searchMusic)
     }
 
     // Captura a palavra e set o jogo como ativo.
     if(nextWordIsHang && messageValue) {
-      newSocket?.emit('setPassword', messageValue.split(''))
+      console.log('nextWordIsHang')
+      newSocket?.emit('setPassword', messageValue.toLocaleLowerCase().split(''), true, user);
       setNextWordIsHang(false);
-      setActiveGameForca(true);
       setInputValue('');
       newSocket?.emit('userTyping', {
         name: 'BotMarivalda',
@@ -327,27 +487,30 @@ const Chat: React.FC = () => {
           message: `Ok agora que eu ja sei a palavra vou explicar algumas coisas,
           cada jogador tem 3 vidas que estao com as suas respectivas cores,
           se todos os seus coraçoes chegarem ao fim voce esta fora do jogo,
-          se estiver muito dificil voces podem pedir dicas a ${user?.name}.Divirtam-se !!!`
+          se estiver muito dificil voces podem pedir dicas a ${user}.Divirtam-se !!!`
         });
       }, 2500);
       return;
     }
 
-    if(messageValue && activeGameForca) {
-      handleBot(messageValue)
+    if(messageValue && activeGameForca && passwrodHang.length > 1) {
+      console.log('ACtiveGAmeForca')
+      newSocket?.emit('checkLetter', user, messageValue)
     }
-    
-    const findAnswerArray = answerEmojis
-    .find(answerArray => 
-      answerArray.find(answer => answer === messageValue));
-      
-      const findAnswer = findAnswerArray?.find(item => item === messageValue);
-      
-      if(messageValue && findAnswer && findAnswerArray) {
-        
-        const findDuplicatedAnswer = messages.find(message => message.message === findAnswer);
-        removeAnswerEmoji(findAnswerArray);
-        if(!findDuplicatedAnswer?.message) {
+    // Ele vai me mandar o numer de questoes e os temas
+    if(activeGameAnswerAndQuest && themes.some(theme => messageValue.includes(theme.themeName))) {
+      console.log('ACtiveGameQuest')
+      newSocket?.emit('setCurrentTheme', messageValue);
+    };
+
+    if(activeGameEmoji && divinationEmoji){
+      console.log(divinationEmoji.answer);
+      const divinationsEmojisAnswer = divinationEmoji.answer;
+      const findAnswerEmoji = divinationEmoji.answer.some(answer => messageValue.includes(answer));
+      const findDuplicatedAnswerEmoji = messages.find(message => message.message === messageValue);
+      // const filteredAnswer = divinationsEmojisAnswer.filter(answer => answer !== messageValue);
+      console.log(findAnswerEmoji, findDuplicatedAnswerEmoji);
+      if(!findDuplicatedAnswerEmoji?.answer && findAnswerEmoji) {
         newSocket?.emit('sendMessage', {
           message: messageValue,
           answer: true,
@@ -358,11 +521,37 @@ const Chat: React.FC = () => {
           answer: false,
         });
       }
-    } else {
-        newSocket?.emit('sendMessage', {
-          message: messageValue,
-        });      
+      setInputValue('')
+      messageInputRef.current?.focus();
+      return;
+    };
+      
+    if(currentQuestion && activeGameAnswerAndQuest){
+      console.log('findDuplicatedAnswer') 
+      const findAnswerGameQuest = currentQuestion.answer.split(' ').some(item => messageValue.includes(item));
+      console.log(findAnswerGameQuest, currentTheme);
+      if(activeGameAnswerAndQuest && findAnswerGameQuest) {
+        console.log('acertour')
+        const findDuplicatedAnswer = messages.find(message => message.message === currentQuestion.answer);
+        console.log(findDuplicatedAnswer)
+        if(!findDuplicatedAnswer?.answer) {
+          console.log('Enviou a msg como  true')
+          newSocket?.emit('sendMessage', {
+            message: messageValue,
+            answer: true,
+          });
+        } else {
+          console.log('Enviou a msg como  false')
+          newSocket?.emit('sendMessage', {
+            message: messageValue,
+            answer: false,
+          });
+        }
+        setInputValue('')
+        messageInputRef.current?.focus();
+        return
       }
+    }
 
     if(messageValue === 'ola bot' || messageValue === 'olá bot') {
       newSocket?.emit('userTyping', {
@@ -376,14 +565,20 @@ const Chat: React.FC = () => {
         });
         newSocket?.emit('sendMessageBot', {
           botName: 'BotMarivalda',
-          message: `Olá ${user?.name} me chamo Marivalda, 
+          message: `Olá ${user} me chamo Marivalda, 
           posso colocar uma musica do seu agrado ou você pode escolher jogar 
-          Qual o nome do filme, Qual o nome da musica ou Qual o nome da series com emojis, jogo da forca ou perguntas e respostas.`
+          adivinhaçao com emojis, forca ou perguntas e respostas.`
         });
       }, 2500);
     }
+    // VERIFICAR SE ALGUMA COISA SERVE PARA O OT E MADA UMA MESSAGE GERAL
 
     if(messageValue?.includes('forca')) {
+      newSocket?.emit('setIsOpeModal', true);
+      newSocket?.emit('setActiveGameForca', true);
+    }   
+
+    if(messageValue?.includes('perguntas e respostas')) {
       newSocket?.emit('userTyping', {
         name: 'BotMarivalda',
         isTyping: true,
@@ -395,16 +590,51 @@ const Chat: React.FC = () => {
         });
         newSocket?.emit('sendMessageBot', {
           botName: 'BotMarivalda',
-          message: `Certo ${user?.name},
-           mas eu preciso saber se você prefere 
-           que eu escolha a palavra chave ou não ?`
+          message: `Certo ${user}, você quer escolher um tema ou prefere que seja aleatorio ?`
+        });
+      }, 2500);
+      newSocket?.emit('setActiveGameAnswerAndQuest', true);
+    }
+
+    if(messageValue.includes('adivinhaçao com emojis')) {
+      newSocket?.emit('userTyping', {
+        name: 'BotMarivalda',
+        isTyping: true,
+      });
+      setTimeout(() => {
+        newSocket?.emit('userTyping', {
+          name: 'BotMarivalda',
+          isTyping: false,
+        });
+        newSocket?.emit('sendMessageBot', {
+          botName: 'BotMarivalda',
+          message: `Ok ${user} você pode jogar qual o nome do filme, serie e musica.`
+        });
+      }, 2500);
+      newSocket?.emit('setActivieGameEmoji', true);
+    }
+
+    // Respondeu sim para escoklhero tema no pergunta e respostas
+    if(activeGameAnswerAndQuest && botResources[1].some(item => messageValue.includes(item) && messageValue)) {
+      newSocket?.emit('userTyping', {
+        name: 'BotMarivalda',
+        isTyping: true,
+      });
+      setTimeout(() => {
+        newSocket?.emit('userTyping', {
+          name: 'BotMarivalda',
+          isTyping: false,
+        });
+        newSocket?.emit('sendMessageBot', {
+          botName: 'BotMarivalda',
+          message: `Certo ${user}, me diga quantas perguntas você quer entre 6,8 ou 12,
+          qunatos temas você quer?, para mim então dividir igualmente número de 
+          questões para o número de temas escolhidos.`
         });
       }, 2500);
     }
 
-    // Verifica se a message tem utilidade para o bot
-    // se o usuario decidiu que ele vai escolher a palavra
-    if(botResources[1].some(item => messageValue === item) && messageValue){
+    if(activeGameAnswerAndQuest && botResources[2].some(item => messageValue.includes(item) && messageValue)) {
       newSocket?.emit('userTyping', {
         name: 'BotMarivalda',
         isTyping: true,
@@ -416,17 +646,63 @@ const Chat: React.FC = () => {
         });
         newSocket?.emit('sendMessageBot', {
           botName: 'BotMarivalda',
-          message: `Ok ${user?.name}, 
+          message: `Certo ${user}, estou pensando em algo.`
+        });
+      }, 2500);
+      newSocket?.emit('setGameQuestRandom')
+    }
+
+    if(isEndingGameQuest && botResources[3].some(item => messageValue === item)) {
+      newSocket?.emit('userTyping', {
+        name: 'BotMarivalda',
+        isTyping: true,
+      });
+      setTimeout(() => {
+        newSocket?.emit('userTyping', {
+          name: 'BotMarivalda',
+          isTyping: false,
+        });
+        newSocket?.emit('sendMessageBot', {
+          botName: 'BotMarivalda',
+          message: `Certo ${user}, você quer escolher um tema ou prefere que seja aleatorio ?`
+        });
+      }, 2500);
+      newSocket?.emit('setActiveGameAnswerAndQuest', true);
+    }
+
+    // Quer jogar o jogo da forca novamente
+    if(isEndingGameForca && botResources[3].some(item => messageValue === item) && messageValue) {
+      newSocket?.emit('setIsOpeModal', true);
+      newSocket?.emit('setActiveGameForca', true);
+    }
+
+    if (isEndingGameForca && !botResources[3].some(item => messageValue === item) && messageValue) {
+      newSocket?.emit('setEndingGame', false);
+    }
+    // Verifica se a message tem utilidade para o bot
+    // se o usuario decidiu que ele vai escolher a palavra
+    if(activeGameForca && botResources[1].some(item => messageValue.includes(item)) && messageValue){
+      newSocket?.emit('userTyping', {
+        name: 'BotMarivalda',
+        isTyping: true,
+      });
+      setTimeout(() => {
+        newSocket?.emit('userTyping', {
+          name: 'BotMarivalda',
+          isTyping: false,
+        });
+        newSocket?.emit('sendMessageBot', {
+          botName: 'BotMarivalda',
+          message: `Ok ${user}, 
           pode digitar a palavra da sua preferência.
           Sem problema ninguém vera ela.`
         });
-        setNextWordIsHang(true);
       }, 2500);
+      setNextWordIsHang(true);
     }
     // se o usuario decidiu que eu devo escolher 
-    // fazer ela pesar a palavra com o typig 
-    if(botResources[2].some(item => messageValue === item) && messageValue){
-      const randomWord = words[Math.floor(Math.random() * 53)]
+    if(activeGameForca && botResources[2].some(item => messageValue === item) && messageValue){
+      const randomWord = words[Math.floor(Math.random() * 53)].toLocaleLowerCase()
       newSocket?.emit('userTyping', {
         name: 'BotMarivalda',
         isTyping: true,
@@ -438,7 +714,7 @@ const Chat: React.FC = () => {
         });
         newSocket?.emit('sendMessageBot', {
           botName: 'BotMarivalda',
-          message: `Ok ${user?.name} estou pensado em algo, so um momento.`
+          message: `Ok ${user} estou pensado em algo, so um momento.`
         });
       }, 2500);
       setTimeout(() => {
@@ -456,28 +732,18 @@ const Chat: React.FC = () => {
           botName: 'BotMarivalda',
           message: 'Certo já pensei em algo',
         });
-        setPasswordHang(randomWord.split(''))
+        newSocket?.emit('setPassword', randomWord.split(''), true, user)
       }, 4500);
-      
+      console.log(passwrodHang, randomWord)     
     }
-    setInputValue('')
-    messageInputRef.current?.focus();
-  }, [messages]);
-
-
-  function checkOfletter() {
-    const name = user?.name;
-    const findUser = usersData.find(user => user.name === name);
-      if(findUser && findUser.heart?.length !== 0) {
-        const findKeyHeart = findUser.heart?.find(heart => heart.key.includes(`heart${findUser.name}`));
-        if(findKeyHeart) {
-          const hearts = findUser.heart?.filter(heart => heart.key !== findKeyHeart.key)
-          newSocket?.emit('updatedUser', {
-            name: user?.name,
-            heart: hearts
-          })
-        }
-      }
+    // QUER JOGAR EMOJIS 
+    if(activeGameEmoji && botResources[4].some(item => messageValue.includes(item))){
+      newSocket?.emit('handleSetEmojis', messageValue.split(' '));
+      console.log('escolheu p tema', messageValue)
+    }
+    // Quer jogar novamente os emojis;
+    if(isEndingGameEmojis && botResources[3].some(item => messageValue === item)) {
+      console.log('quero jogar', messageValue)
       newSocket?.emit('userTyping', {
         name: 'BotMarivalda',
         isTyping: true,
@@ -489,12 +755,85 @@ const Chat: React.FC = () => {
         });
         newSocket?.emit('sendMessageBot', {
           botName: 'BotMarivalda',
-          message: `Infelismente não foi dessa vez ${user?.name}`
+          message: `Ok ${user} você pode jogar qual o nome do filme, serie e musica.`
         });
-      }, 1500);
+      }, 2500);
+      newSocket?.emit('setActivieGameEmoji', true);
+    }
+
+    newSocket?.emit('sendMessage', {
+      message: messageValue,
+    });
+    setInputValue('')
+    messageInputRef.current?.focus();
+  }, [
+    messages, 
+    activeGameForca, 
+    nextWordIsHang, 
+    activeGameAnswerAndQuest, 
+    currentTheme, 
+    currentQuestion, 
+    divinationEmoji, 
+    activeGameEmoji,
+    isEndingGameEmojis,
+    isEndingGameForca,
+    isEndingGameQuest,
+  ]);
+
+  async function searchYoutube(search: string) {
+    const response = await api.get('/search', {
+      params: {
+        part: 'id',
+        key: 'AIzaSyAPm1nItKtdfuFFcnfePxxxM1p5UyUIbR4',
+        q: search,
+      },
+    })
+    if(!response.data.items.length) {
+      newSocket?.emit('userTyping', {
+        name: 'BotMarivalda',
+        isTyping: true,
+      });
+      setTimeout(() => {
+        newSocket?.emit('userTyping', {
+          name: 'BotMarivalda',
+          isTyping: false,
+        });
+        newSocket?.emit('sendMessageBot', {
+          botName: 'BotMarivalda',
+          message: `Desculpe ${user}, eu nao encontrei nenhum resultado para a sua busca`
+        });
+      }, 2500);
+      return;
+    }
+    newSocket?.emit('setVideoId', response.data.items[0].id.videoId);
   }
 
+  useEffect(() => {
+    newSocket?.on('SetVideoId', (VideoId: string) => {
+      setVideoid(VideoId)
+    })
+  }, [newSocket]);
+
+  useEffect(() => {
+    newSocket?.on('SetEndingGame', (isEndingGame: boolean) => {
+      setIsEndingGameForca(isEndingGame);
+    });
+    console.log(isEndingGameForca)
+  }, [newSocket, isEndingGameForca]);
+
+  useEffect(() => {
+    newSocket?.on('SetActiveGameAnswerAndQuest', (isActiveGameAnswerAndQuest: boolean) => {
+      setActiveGameAnswerAndQuest(isActiveGameAnswerAndQuest);
+    })
+  }, [newSocket]);
+  useEffect(() => {
+    if(activeGameAnswerAndQuest === false) {
+      setMessages(messages.map(message => message.answer ? { ...message, answer: false } : message ));
+    }
+  }, [activeGameAnswerAndQuest]);
+
   const handleBot = useCallback((answer: string) => {
+    console.log(answer);
 
     if(answer.includes('filme')) {
       // const randomNUmber = Math.floor(Math.random() * 10)
@@ -551,17 +890,18 @@ const Chat: React.FC = () => {
       }, 2500);
     }
 
-    if(activeGameForca && passwrodHang.includes(answer)) {
-      setKey([...key, answer])
-      // VERIRFICAR O QUE ESTA CHEGADO AQUI POR ALGUM MOTIVO ELE ESTA ETRADO O IF
-    } else {
-      checkOfletter()
-    }
-  }, [key, activeGameForca, usersData, user]);
+  }, [correctLetter, activeGameForca, usersData, user]);
 
   useEffect(() => {
     newSocket?.on('SetPassword', (password: string[]) => {
-      setPasswordHang(password)
+      setPasswordHang(password);
+    })
+  }, [newSocket])
+
+
+  useEffect(() => {
+    newSocket?.on('CorrectLetter', (letters:  string[]) => {
+      setCorrectLetter(letters)
     })
   }, [newSocket])
 
@@ -580,6 +920,12 @@ const Chat: React.FC = () => {
     })
   }, []);
 
+  useEffect(() => {
+    newSocket?.on('SetActiveGameForca', (isActiveGameForca: boolean) => {
+      setActiveGameForca(isActiveGameForca);
+      console.log(activeGameForca)
+    })
+  }, [newSocket]);
 
   useEffect(() => {
     localStorage.setItem('@AnswerEmojis', JSON.stringify(answerEmojis));
@@ -587,12 +933,10 @@ const Chat: React.FC = () => {
   }, [answerEmojis]);
 
   useEffect(() => {
-    newSocket?.once('receivedMessage', ({ botName, name, message, messageBot, answer, messageWinners }: MessageProps) => {
-      
-        setMessages([...messages, { botName, name, message, messageBot, answer, messageWinners }]);
-      
+    newSocket?.once('receivedMessage', ({ botName, name, message, messageBot, answer, messageWinners, color, destination }: MessageProps) => {
+      setMessages([...messages, { botName, name, message, messageBot, answer, messageWinners, destination, color }]);
     });
-  }, [messages]);
+  }, [newSocket, messages]);
 
   useEffect(() => {
     lastMessageRef.current?.scrollIntoView({
@@ -619,61 +963,66 @@ const Chat: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    messageInputRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
-    const findUser = otherUserIsTyping.find(
-      userTyping => 
-      userTyping.name === user?.name
-    );
     if(inputValue) {
-      if(findUser) {
-        if(findUser.isTyping !== true) {
-          newSocket?.emit('userTyping', {
-            name: user?.name,
-            isTyping: true, 
-          });
-        }
-      }
-    }
-    if(!inputValue && findUser) {
-      if(findUser.isTyping !== false) {
-        newSocket?.emit('userTyping', {
-          name: user?.name,
-          isTyping: false, 
-        });
-      }
-    }
-    if(inputValue && !findUser) {
-      newSocket?.emit('userTyping', {
-        name: user?.name,
-        isTyping: true, 
+
+      newSocket?.emit('userTyping', { 
+        name: user, 
+        isTyping: true,
       })
-    }
-    if(!inputValue && !findUser) {
-      newSocket?.emit('userTyping', {
-        name: user?.name,
-        isTyping: false, 
+    } else {
+      newSocket?.emit('userTyping', { 
+        name: user, 
+        isTyping: false,
       })
     }
   }, [inputValue]);
 
   useEffect(() => {
-    newSocket?.once('userIsTyping', ({ name, isTyping }: UserTyping) => {
-      const findUser = otherUserIsTyping.find(user => user.name === name)
-      if(findUser?.isTyping !== isTyping && findUser?.name === name) {
-        setOtherUserIsTyping(otherUserIsTyping.map(user => 
-          user.name === name ? 
-          { name, isTyping, } : 
-          user));
-        }
-        if(!findUser) {
-          setOtherUserIsTyping([...otherUserIsTyping, { name, isTyping }])
-        }
-      });
+    newSocket?.on('userIsTyping', (userTyping: UserTyping[]) => {
+      setOtherUserIsTyping(userTyping);
+    });
+  }, [newSocket]);
 
-  }, [otherUserIsTyping]);
+  useEffect(() => {
+    messageInputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    newSocket?.on('SetCurrentTheme', (selectedTheme: string) => {
+      const currentTheme = themes.find(theme => theme.themeName === selectedTheme);
+      if(currentTheme){
+        setCurrentTheme(currentTheme);
+      }
+      if('undefined'){
+        setCurrentTheme(undefined);
+      }
+    });
+  }, [newSocket]);
+
+  useEffect(() => {
+    newSocket?.on('SetCurrentQuestion', (question: QuestProps) => {
+      setCurrentQuestion(question);
+    });
+  }, [newSocket]);
+
+  useEffect(() => {
+    newSocket?.on('SetCurrentThemeIndex', (randomIndex: number) => {
+      setCurrentThemeIndex([...currentThemeIndex, randomIndex])
+    });
+  }, [newSocket]);
+
+  useEffect(() => {
+    newSocket?.on('SetDivinationEmoji', (divination: EmojiProps) => {
+      setDivinationEmoji(divination)
+    });
+    console.log(divinationEmoji);
+  }, [newSocket, divinationEmoji]);
+
+  useEffect(() => {
+    newSocket?.on('SetActivieGameEmoji', (isActiveGameEmoji: boolean) => {
+      setActiveGameEmoji(isActiveGameEmoji);
+    });
+  }, [newSocket]);
 
 
   const getUsersColor = useCallback((name) => {
@@ -683,21 +1032,151 @@ const Chat: React.FC = () => {
     }
   }, [usersData]);
 
+  function handleAcceptHagma() {
+    const findUser = usersData.find(userData => userData.name === user)
+    if(findUser) 
+    newSocket?.emit('setUserPlay', { name: findUser.name, heart: findUser.heart, isPLay: true, color: findUser.color });
+    setIsOpeModal(false)
+  };
+  function handleDeclieHagma(name: string) {
+    newSocket?.emit('setUserPlay', { name, isPLay: false });
+    setIsOpeModal(false)
+  };
+
+  useEffect(() => {
+    newSocket?.on('SetIsOpeModal', (isOpeModal: boolean) => {
+      setIsOpeModal(isOpeModal)
+    })
+  }, [newSocket]);
+  
+  useEffect(() => {
+    newSocket?.once('SetOpenModalActiveGameQuest', (isOpeModal: boolean, usersWinners: User[]) => {
+      console.log(isOpeModal, usersWinners);
+      setIsOpeModalActiveGameQuest(isOpeModal);
+      setUsersWinners(usersWinners);
+    })
+  }, [newSocket, isOpeModalActiveGameQuest, usersWinners]);
+
+  useEffect(() => {
+    newSocket?.once('SetIsEndingGameEmojis', (isEndingGameEmojis: boolean) => {
+      console.log(isEndingGameEmojis);
+      setIsEndingGameEmojis(isEndingGameEmojis);
+    })
+  }, [newSocket, isEndingGameEmojis]);
+
+  useEffect(() => {
+    newSocket?.once('SetIsEndingGameQuest', (isEndingGameQuest: boolean) => {
+      console.log(isEndingGameQuest);
+      setIsEndingGameQuest(isEndingGameQuest);
+    })
+  }, [newSocket, isEndingGameQuest]);
+
   return (
     <Container>
+    
       <ChatContainer  >
-      {passwrodHang.length > 1 && (
+      {passwrodHang.length> 1 && (
           <ContainerHp>
             <ContentHp isScroll={isScroll}>
-              {usersData.map((user) => (
-                user.heart?.map((heart, index) => (
-                  <FaHeart size={24} color={user.color}  key={heart.key} style={{
-                    marginRight: `${user.heart?.length === index + 1 ? '5px' : ''}`
-                  }} />
-                ))
-              ))}
+              {heartsForHangman.map(user => user.heart.map((heart, index) => (
+                <FaHeart 
+                size={24} 
+                color={`${user.color}`} 
+                key={heart.key} 
+                style={{ marginRight: `${index === user.heart.length - 1 ? '10px' : '0'}`}}/>
+              )))}
             </ContentHp>
           </ContainerHp>
+        )}
+
+        {videoId && (
+          <ContainerSoftVideoSearch 
+          onClick={toggleVideoShow}
+          style={videoSoftPropsStyle}
+          >
+            <BiMusic size={28} color="#F2003C"/>
+          </ContainerSoftVideoSearch>
+        )}
+        {videoId && (
+          <ContainerVideoSearch
+          onClick={toggleVideoShow}
+          style={propsAnimation}
+          >
+            <ContentVideoSearch>
+              <iframe 
+              src={`http://www.youtube.com/embed/${videoId}?autoplay=1`} 
+              width="350"
+              height="200"
+              />
+              <IoMdArrowDropleftCircle size={50} color="#F2003C"/>
+            </ContentVideoSearch>
+          </ContainerVideoSearch>
+        )}
+
+        {isOpeModal && (
+          <OverlayModal>
+            <ContainerModal>
+              <ContentModal>
+                <p>Você vai jogar</p>
+                <div className="Containerbutton">
+                  <button
+                  onClick={handleAcceptHagma} 
+                  style={{
+                    background: '#0AF098',
+                  }}
+                  >
+                    Sim
+                  </button>
+                  <button
+                  onClick={() => handleDeclieHagma(user)}
+                  style={{
+                    background: '#E4051B',
+                  }}
+                  >
+                    Não
+                  </button>
+                </div>
+              </ContentModal>
+            </ContainerModal>
+          </OverlayModal>
+        )}
+
+        {isOpeModalActiveGameQuest && (
+          <OverlayModal onClick={() => setIsOpeModalActiveGameQuest(false)}>
+            <Conffeti
+              height={height}
+              width={width}
+            />
+            <ContainerModalQuest>
+              <ContentModalQuest>
+                <h1>Parabéns a Todos</h1>
+                <div>
+                  {usersWinners && usersWinners.map((user, index) => {
+                    {
+                      if(index === 0) {
+                        return (
+                        <h3 key={index}>
+                          {user.name.toUpperCase()} você acertou {user.answerCorrect} respostas
+                          <FaTrophy 
+                          size={24} 
+                          color="#ffd60a"
+                          style={{
+                            marginLeft: '10px',
+                          }}
+                          />
+                        </h3>
+                        )
+                      } else if(index === 1) {
+                        return <h4 key={index}>{user.name.toUpperCase()} você acertou {user.answerCorrect} respostas</h4>
+                      } else if(index === 2){
+                        return <h5 key={index}>{user.name.toUpperCase()} você acertou {user.answerCorrect} respostas</h5>
+                      }
+                    }
+                  })}
+                </div>
+              </ContentModalQuest>
+            </ContainerModalQuest>
+          </OverlayModal>
         )}
 
         {messages.map((message, index) =>
@@ -705,11 +1184,17 @@ const Chat: React.FC = () => {
             return (
               <SystemMessageContainer key={index} ref={index + 1 === messages.length ? lastMessageRef : null}>
                 <div className="ContentSystemMessage">
-                  <span>{message.message}</span>
+                  <span>
+                    {message.destination ? (
+                      <p style={{ color: `${message.color}`}}>{message.destination?.toUpperCase()} {message.message}</p>
+                    ) : (
+                      message.message
+                    )}
+                  </span>
                 </div>
               </SystemMessageContainer>
             )
-          } else if (message.name === user?.name && !message.answer) {
+          } else if (message.name === user && !message.answer) {
             return (
               <MyMessageContainer 
               key={index} 
@@ -723,7 +1208,7 @@ const Chat: React.FC = () => {
                 </ContentMyMessage>
               </MyMessageContainer>
             )
-          } else if(message.name === user?.name && message.answer){
+          } else if(message.name === user && message.answer){
             return (
               <MyMessageContainer 
               key={index} 
@@ -763,14 +1248,14 @@ const Chat: React.FC = () => {
                       <p style={{
                         fontSize: '25px',
                       }} key={index}>{item}</p>
-                    ))}
+                      ))}
                     {message.messageWinners && message.messageWinners.map((item, index) => (
                       <p key={index}>{item}</p>
                     ))}
                 </ContentOtherMessage>
               </OtherMessageContainer>
             )
-          } else if(message.name !== user?.name && message.answer) {
+          } else if(message.name !== user && message.answer) {
             return (
               <OtherMessageContainer 
               key={index} 
@@ -811,7 +1296,7 @@ const Chat: React.FC = () => {
         }
         )}
         {otherUserIsTyping.map((message, index) => {
-          if(message.isTyping && message.name !== user?.name && message.name !== 'BotMarivalda') {
+          if(message.isTyping && message.name !== user && message.name !== 'BotMarivalda') {
             return (
               <OtherMessageContainer key={index} ref={index + 1 === messages.length ? lastMessageRef : null}>
               <div 
@@ -872,7 +1357,7 @@ const Chat: React.FC = () => {
           <ContainerPassword>
             <ContentPassword isScroll={isScroll} >
               {passwrodHang.map((letter, index) => (
-                <span key={index}>{key.includes(letter) ? letter : '_'}</span>
+                <span key={index}>{correctLetter.includes(letter) ? letter : '_'}</span>
               ))}
             </ContentPassword>
           </ContainerPassword>
@@ -897,6 +1382,7 @@ const Chat: React.FC = () => {
           </MdSend>
         </div>
       </SendMessage>
+    
     </Container>
   );
 };

@@ -16,38 +16,33 @@ const SignIn: React.FC = () => {
   const inputNameRef = useRef<HTMLInputElement>(null);
   const inputRoomRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
-  const colors = ['#FF0000', '#fff95b', '#00ff87', '#BF00FF', '#0061ff', '#ff1b6b'];
-  const { addUser, newSocket, user, usersData } = useUser();
+  const { addUser, newSocket } = useUser();
   const history = useHistory();
 
   const handleJoinToRoom = useCallback((event) => {
-    const randomColor = colors[Math.floor(Math.random() * 6)];
-    const findUserColor = usersData.find(user => user.color === randomColor)
-    if(!findUserColor){
+    if(inputNameRef.current?.value){
+
       newSocket?.emit('join', {
         id: v4(),
-        name: inputNameRef.current?.value,
-        color: randomColor,
-        isTyping: false,
-        answerCorrect: 0,
-        heart: [
-          {
-            key: `heart${inputNameRef.current?.value}1` 
-          },
-          {
-            key: `heart${inputNameRef.current?.value}2` 
-          },
-          {
-            key: `heart${inputNameRef.current?.value}3` 
-          }
-        ]
-      });
-      addUser({
-        name: inputNameRef.current?.value,
-      })
-      setInputValue('');
-      history.push('/chat')
-    }
+          name: inputNameRef.current?.value,
+          isTyping: false,
+          answerCorrect: 0,
+          heart: [
+            {
+              key: `heart${inputNameRef.current?.value}1` 
+            },
+            {
+              key: `heart${inputNameRef.current?.value}2` 
+            },
+            {
+              key: `heart${inputNameRef.current?.value}3` 
+            }
+          ]
+        });
+        addUser(inputNameRef.current?.value)
+        setInputValue('');
+        history.push('/chat')
+      }
   }, [newSocket]);
 
   useEffect(() => {

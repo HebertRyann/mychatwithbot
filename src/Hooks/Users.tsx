@@ -13,32 +13,39 @@ interface HeartProps {
 }
 
 interface User {
-  id?: string;
-  name?: string | undefined;
-  color?: string;
-  answerCorrect?: number;
-  heart?: HeartProps[];
+  id: string;
+  name: string;
+  color: string;
+  answerCorrect: number;
+  heart: HeartProps[];
+}
+interface UserPlay {
+  name: string;
 }
 
-// interface UserTyping {
-//   name: string | undefined;
-//   isTyping: boolean;
-// }
+interface HeartHangmanProps {
+  name: string;
+  heart: HeartProps[];
+  isPLay: boolean;
+  color: string;
+}
 
 interface UserContextProps {
-  user: User | undefined;
+  user: string;
   answerCorrects: number;
   usersData: User[];
+  heartsForHangman: HeartHangmanProps[];
   newSocket: Socket | undefined;
-  addUser(data: User): void;
+  addUser(name: string): void;
   // getUsersColor(name: string | undefined): void;
 }
 
 const UserContext = createContext<UserContextProps | null>(null);
 
 const UsersProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState('');
   const [answerCorrects, setAnswerCorrects] = useState(0);
+  const [heartsForHangman, setHeartsForHangman] = useState<HeartHangmanProps[]>([]);
   // const [otherUserIsTyping, setOtherUserIsTyping] = useState<UserTyping>();  
   const [usersData, setUsersData] = useState<User[]>(() => {
     const storagedUsersData = localStorage.getItem('@Users:UserData');
@@ -47,33 +54,28 @@ const UsersProvider: React.FC = ({ children }) => {
     }
     return [];
   });
-  const [newSocket, setNewSocket] = useState<Socket | undefined>();
+  const [newSocket, setNewSocket] = useState<Socket>();
   
   useEffect(() => {
-    const socket = io('http://localhost:3333');
+    const socket = io('http://localhost:3333/');
     setNewSocket(socket);
   }, []);
 
-  const addUser = useCallback(({ name }: User) => {
-    setUser({ name });
+  const addUser = useCallback((name: string) => {
+    setUser(name);
   }, [user]);
 
   useEffect(() => {
-    newSocket?.on('users', (users: User[]) => {
+    newSocket?.once('users', (users: User[]) => {
       setUsersData(users);
     });
   },[newSocket, usersData]);
 
   useEffect(() => {
     newSocket?.on('updatedUser', ({ name, heart }: UpdatedUser) => {
-      const findUser = usersData.find(user => user.name === name);
-      if(findUser) {
-        setUsersData(usersData.map(user => user.name === name ? { ...user, heart, } : user));
-      }
+      newSocket.emit('UpdatedUser', { name, heart })
     });
-  },[newSocket, usersData]);
-
-  
+  },[newSocket]);
 
   useEffect(() => {
     newSocket?.on('answerCorrects', (answerCorrects: number) => {
@@ -82,11 +84,24 @@ const UsersProvider: React.FC = ({ children }) => {
   },[newSocket]);
 
   useEffect(() => {
+    newSocket?.once('UpdateUserHangman', (userUpdated: HeartHangmanProps[]) => {
+      setHeartsForHangman(userUpdated);
+    })
+    console.log(heartsForHangman);
+  }, [newSocket, heartsForHangman]);
+
+  useEffect(() => {
+    newSocket?.once('SetUserPlay', (usersPlay: HeartHangmanProps[]) => {     
+      setHeartsForHangman(usersPlay);
+    })
+  }, [newSocket, heartsForHangman]);
+
+  useEffect(() => {
     localStorage.setItem('@Users:UserData', JSON.stringify(usersData));
   },[usersData]);
 
   return (
-    <UserContext.Provider value={{ user, usersData, addUser, newSocket, answerCorrects }} >
+    <UserContext.Provider value={{ user, usersData, addUser, newSocket, answerCorrects, heartsForHangman }} >
       {children}
     </UserContext.Provider>
   );
