@@ -57,7 +57,7 @@ const UsersProvider: React.FC = ({ children }) => {
   const [newSocket, setNewSocket] = useState<Socket>();
   
   useEffect(() => {
-    const socket = io(`${process.env.REACT_APP_SOCKET_URL}`);
+    const socket = io('https://mychatwitbotbackend.herokuapp.com/');
     setNewSocket(socket);
   }, []);
 
