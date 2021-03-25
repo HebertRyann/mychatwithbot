@@ -57,7 +57,7 @@ const UsersProvider: React.FC = ({ children }) => {
   const [newSocket, setNewSocket] = useState<Socket>();
   
   useEffect(() => {
-    const socket = io('http://localhost:3333/' || process.env.REACT_APP_SOCKET_URL);
+    const socket = io(`${process.env.REACT_APP_SOCKET_URL}`);
     setNewSocket(socket);
   }, []);
 
