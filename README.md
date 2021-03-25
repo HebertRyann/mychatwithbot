@@ -1,6 +1,46 @@
-## FAZER O DIGITANDO COMO O DO FACE ✔
+## TERMINAR EM 3 DIAS, 4 DIA FAZER O MEU PERFIL
 
-AIzaSyAPm1nItKtdfuFFcnfePxxxM1p5UyUIbR4
+## O USUARIO QEU ESCOLHER NAO PARA A FORCA NAO DEVE VER A PALAVRA NEM OS CORAÇOES OU SEJA NAO ESCITE NO GAME
+
+## O USUARIO QUE ESCOLHER NAO NAO PODE ENVIAR MENSAGEM
+
+## FAZER O PERGUNTA E RESPOSTA
+
+## 1-Mandar a quest ✔
+
+## 2-Mudar a quest enquanto o jogo esta em andamento ✔
+
+## 2-Mudar a quest enquanto o jogo esta em andamento ✔
+
+## 3-COLOCAR O ACERTO REUTILIZANDO O DO EMOJIS ✔
+
+## 4-Pergutar quatas quest eles querem 6,8,10,12 ✔
+
+## 5-pergutas quatas temas eles vao querer 1,2 ou 3 ✔
+
+## 8-mada ao fial quatos cada acertou ✔
+
+## 9-colocar uma explosao de cofete e abri um modaul com um yop rankinhg ✔
+
+## 10-FAzer o modal de win ✔
+
+## 11- fazer o caminho aleatorio ✔
+
+## FAZER O MEU PERFIL ADMIN
+
+## Ajeitar a forca { Messagem de saida como do admin, camiho de escolher, caminho aleatorio, restart quando ganha e perde, nao deixar a mesma letra errada tira 2 vidas de pessoas diferente, coraçoes sendo retirados e renderizados em tela } ✔
+
+## Ajeitar os quest { Terminado: caminho de escolher, caminho aleatorio, caminho de restart } ✔
+
+## AJEITAR EMOJIS { FAZER O ACTIVE GAME FAZER O GAME COMEÇAR, FAZER O RESTART, TROCA A ESTRUTURA DE DADOS PARECIDO COM AS QUESTS } ✔
+
+## e prencher todos o jogos com as informaçoes
+
+## colocar no ar
+
+## fazer a mensagem ao final de todos o s games para recomeça ✔
+
+## FAZER O DIGITANDO COMO O DO FACE ✔
 
 ## COLOCAR COR NOS NOMES ✔
 
@@ -18,7 +58,7 @@ AIzaSyAPm1nItKtdfuFFcnfePxxxM1p5UyUIbR4
 
 # OU DESCOBRI PQ ISSO ACONTECE OU DESATIVAR xD ✔
 
-## FAZER OS JOGUINHOS falta 1
+## FAZER OS JOGUINHOS ✔
 
 ## fazer a forca UNIDOS VENCEREMOS EU E MEUS BOTS ✔
 
