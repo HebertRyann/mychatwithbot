@@ -57,7 +57,7 @@ const UsersProvider: React.FC = ({ children }) => {
   const [newSocket, setNewSocket] = useState<Socket>();
   
   useEffect(() => {
-    const socket = io('https://mychatwitbotbackend.herokuapp.com/');
+    const socket = io('http://localhost:3333');
     setNewSocket(socket);
   }, []);
 
