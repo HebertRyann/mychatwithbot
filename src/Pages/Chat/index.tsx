@@ -118,6 +118,7 @@ interface EmojiProps {
 const Chat: React.FC = () => {
   const messageInputRef = useRef<HTMLInputElement>(null);
   const lastMessageRef = useRef<HTMLInputElement>(null);
+  const lastMessageIsTypingRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
   const [videoId, setVideoid] = useState('');
   const [passwrodHang, setPasswordHang] = useState(['']);
@@ -211,6 +212,10 @@ const Chat: React.FC = () => {
   useEffect(() => {
     newSocket?.once('userIsTyping', (userTyping: UserTyping[]) => {
       setOtherUserIsTyping(userTyping);
+    });
+    lastMessageIsTypingRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
     });
   }, [newSocket, otherUserIsTyping]);
 
@@ -483,7 +488,7 @@ const Chat: React.FC = () => {
         {otherUserIsTyping.map((message, index) => {
           if(message.isTyping && message.name !== user && message.name !== 'BotMarivalda' && message.name !== 'Admin') {
             return (
-              <OtherMessageContainer key={index} ref={index + 1 === messages.length ? lastMessageRef : null}>
+              <OtherMessageContainer key={index} ref={lastMessageIsTypingRef}>
               <div 
                 className="chat-bubble" 
               >
@@ -510,7 +515,7 @@ const Chat: React.FC = () => {
           )
           } else if(message.isTyping && message.name === 'BotMarivalda') {
             return (
-              <OtherMessageContainer key={index} ref={index + 1 === messages.length ? lastMessageRef : null}>
+              <OtherMessageContainer key={index} ref={lastMessageIsTypingRef>
               <div 
                 className="chat-bubble" 
               >
