@@ -169,14 +169,12 @@ const Chat: React.FC = () => {
     newSocket?.once('SetPassword', (password: string[]) => {
       setPasswordHang(password);
     })
-    console.log(passwrodHang)
   }, [newSocket, passwrodHang]);
 
   useEffect(() => {
     newSocket?.once('CorrectLetter', (letters:  string[]) => {
       setCorrectLetter(letters)
     })
-    console.log(correctLetter)
   }, [newSocket, correctLetter])
 
 
@@ -184,7 +182,6 @@ const Chat: React.FC = () => {
     newSocket?.once('receivedMessage', ({ botName, name, message, messageBot, answer, messageWinners, color, destination }: MessageProps) => {
       setMessages([...messages, { botName, name, message, messageBot, answer, messageWinners, destination, color }]);
     });
-    console.log(messages);
   }, [newSocket, messages]);
 
 
@@ -220,14 +217,6 @@ const Chat: React.FC = () => {
   useEffect(() => {
     messageInputRef.current?.focus();
   }, []);
-  
-  useEffect(() => {
-    lastMessageRef.current?.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'end',
-    });
-  },[messages]);
-
 
   const getUsersColor = useCallback((name) => {
     const findUser = usersData.find(user => user.name === name)
@@ -251,7 +240,6 @@ const Chat: React.FC = () => {
     newSocket?.once('SetIsOpeModalHangman', (isOpeModal: boolean) => {
       setIsOpeModal(isOpeModal)
     })
-    console.log(isOpeModal)
   }, [newSocket, isOpeModal]);
   
   useEffect(() => {
@@ -259,8 +247,14 @@ const Chat: React.FC = () => {
       setIsOpeModalActiveGameQuest(isOpeModal);
       setUsersWinners(usersWinners);
     })
-    console.log(isOpeModalActiveGameQuest, usersWinners);
   }, [newSocket, isOpeModalActiveGameQuest]);
+
+  useEffect(() => {
+    lastMessageRef.current?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'end',
+    });
+  },[messages]);
 
   return (
     <Container>
