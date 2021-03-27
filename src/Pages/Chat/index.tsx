@@ -184,6 +184,7 @@ const Chat: React.FC = () => {
     newSocket?.once('receivedMessage', ({ botName, name, message, messageBot, answer, messageWinners, color, destination }: MessageProps) => {
       setMessages([...messages, { botName, name, message, messageBot, answer, messageWinners, destination, color }]);
     });
+    console.log(messages);
   }, [newSocket, messages]);
 
 
