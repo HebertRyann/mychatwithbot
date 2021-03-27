@@ -216,12 +216,13 @@ const Chat: React.FC = () => {
     lastMessageIsTypingRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'end',
-    });
+    })
   }, [newSocket, otherUserIsTyping]);
 
   useEffect(() => {
     messageInputRef.current?.focus();
   }, []);
+
 
   const getUsersColor = useCallback((name) => {
     const findUser = usersData.find(user => user.name === name)
@@ -515,7 +516,7 @@ const Chat: React.FC = () => {
           )
           } else if(message.isTyping && message.name === 'BotMarivalda') {
             return (
-              <OtherMessageContainer key={index} ref={lastMessageIsTypingRef>
+              <OtherMessageContainer key={index} ref={lastMessageIsTypingRef}>
               <div 
                 className="chat-bubble" 
               >
