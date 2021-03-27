@@ -217,6 +217,7 @@ const Chat: React.FC = () => {
       behavior: 'smooth',
       block: 'end',
     })
+    console.log(otherUserIsTyping);
   }, [newSocket, otherUserIsTyping]);
 
   useEffect(() => {
