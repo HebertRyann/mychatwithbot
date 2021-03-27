@@ -220,6 +220,13 @@ const Chat: React.FC = () => {
   useEffect(() => {
     messageInputRef.current?.focus();
   }, []);
+  
+  useEffect(() => {
+    lastMessageRef.current?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'end',
+    });
+  },[messages]);
 
 
   const getUsersColor = useCallback((name) => {
