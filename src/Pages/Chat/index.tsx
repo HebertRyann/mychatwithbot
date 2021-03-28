@@ -149,6 +149,7 @@ const Chat: React.FC = () => {
 
 
   const handleSendMessage = useCallback(async (event) => {
+    console.log(width, height)
     
     const messageValue = messageInputRef.current?.value;
     if(!messageValue) return
