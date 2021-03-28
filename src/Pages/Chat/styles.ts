@@ -79,7 +79,7 @@ export const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding-bottom: 30px;
-  height: 82vh;
+  height: 83vh;
   overflow: auto;
 `;
 
