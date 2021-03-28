@@ -79,13 +79,10 @@ export const Container = styled.div`
 export const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 95vh;
+  height: 90vh;
   padding-bottom: 30px;
   overflow: auto;
-  @media(max-height: 600px) {
-    height: 91.5vh;
-  }
-  @media(max-height: 992px) {
+  @media(min-height: 992px) {
     height: 92vh;
   }
 `;
