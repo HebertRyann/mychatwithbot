@@ -153,7 +153,7 @@ const Chat: React.FC = () => {
     const messageValue = messageInputRef.current?.value;
     if(!messageValue) return
 
-    newSocket?.emit('bot', width height);
+    newSocket?.emit('bot', `${width} e ${height}`);
 
     setInputValue('')
     messageInputRef.current?.focus();
