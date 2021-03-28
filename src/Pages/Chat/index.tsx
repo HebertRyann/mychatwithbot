@@ -153,7 +153,7 @@ const Chat: React.FC = () => {
     const messageValue = messageInputRef.current?.value;
     if(!messageValue) return
 
-    newSocket?.emit('bot', `${width} e ${height}`);
+    newSocket?.emit('bot', messageValue);
 
     setInputValue('')
     messageInputRef.current?.focus();
@@ -266,7 +266,7 @@ const Chat: React.FC = () => {
     <Container>
     
       <ChatContainer  >
-        <span>{width} e {height}</span>
+        
       {passwrodHang.length> 1 && (
           <ContainerHp>
             <ContentHp isScroll={isScroll}>
