@@ -149,7 +149,6 @@ const Chat: React.FC = () => {
 
 
   const handleSendMessage = useCallback(async (event) => {
-    console.log(width, height)
     
     const messageValue = messageInputRef.current?.value;
     if(!messageValue) return
@@ -267,6 +266,7 @@ const Chat: React.FC = () => {
     <Container>
     
       <ChatContainer  >
+        <span>{width} e {height}</span>
       {passwrodHang.length> 1 && (
           <ContainerHp>
             <ContentHp isScroll={isScroll}>
