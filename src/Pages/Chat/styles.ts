@@ -73,13 +73,13 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
 `;
 
 export const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding-bottom: 30px;
+  height: 90vh;
   overflow: auto;
 `;
 
