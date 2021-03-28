@@ -79,12 +79,8 @@ export const Container = styled.div`
 export const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 90vh;
   padding-bottom: 30px;
   overflow: auto;
-  @media(min-height: 992px) {
-    height: 92vh;
-  }
 `;
 
 export const SendMessage = styled.div`
