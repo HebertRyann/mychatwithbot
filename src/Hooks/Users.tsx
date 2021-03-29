@@ -66,7 +66,7 @@ const UsersProvider: React.FC = ({ children }) => {
   }, [user]);
 
   useEffect(() => {
-    newSocket?.once('users', (users: User[]) => {
+    newSocket?.on('users', (users: User[]) => {
       setUsersData(users);
     });
   },[newSocket, usersData]);
