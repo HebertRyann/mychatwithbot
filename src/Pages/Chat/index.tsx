@@ -142,6 +142,7 @@ const Chat: React.FC = () => {
   const [otherUserIsTyping, setOtherUserIsTyping] = useState<UserTyping[]>([]); 
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [usersWinners, setUsersWinners] = useState<User[]>([]);
+  const [scrollAutoOff, setScrollAutoOff] = useState(false);
   const { width, height } = useWindowSize();
   const toggleVideoShow = () => setVideoShow(!videoShow);
   
@@ -256,10 +257,12 @@ const Chat: React.FC = () => {
   }, [newSocket, isOpeModalActiveGameQuest]);
 
   useEffect(() => {
-    lastMessageRef.current?.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'end',
-    });
+    if(!scrollAutoOff) {
+      lastMessageRef.current?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end',
+      });
+    }
   },[messages]);
 
   function closeModal() {
@@ -277,7 +280,7 @@ const Chat: React.FC = () => {
   return (
     <Container>
     
-      <ChatContainer  >
+      <ChatContainer  onScroll={() => setScrollAutoOff(true)}>
         
       {passwrodHang.length> 1 && (
           <ContainerHp>
