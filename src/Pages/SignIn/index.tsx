@@ -40,7 +40,23 @@ const SignIn: React.FC = () => {
       });
     }
     if(inputNameRef.current?.value === 'Admin') {
-      newSocket?.emit('join', { name: 'Admin' });
+      newSocket?.emit('join', {
+        id: v4(),
+        name: 'Admin',
+        isTyping: false,
+        answerCorrect: 0,
+        heart: [
+          {
+            key: `heartAdmin1` 
+          },
+          {
+            key: `heartAdmin2` 
+          },
+          {
+            key: `heartAdmin3` 
+          }
+        ]
+      });
       addUser(inputNameRef.current?.value);
       history.push('/chat')
     }
