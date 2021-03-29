@@ -16,38 +16,45 @@ const SignIn: React.FC = () => {
   const inputNameRef = useRef<HTMLInputElement>(null);
   const inputRoomRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
-  const { addUser, newSocket } = useUser();
+  const { addUser, newSocket, usersData } = useUser();
   const history = useHistory();
+    let userLogin = '';
 
   const handleJoinToRoom = useCallback((event) => {
     if(inputNameRef.current?.value){
-
+      userLogin = inputNameRef.current?.value;
       newSocket?.emit('join', {
         id: v4(),
-          name: inputNameRef.current?.value,
-          isTyping: false,
-          answerCorrect: 0,
-          heart: [
-            {
-              key: `heart${inputNameRef.current?.value}1` 
-            },
-            {
-              key: `heart${inputNameRef.current?.value}2` 
-            },
-            {
-              key: `heart${inputNameRef.current?.value}3` 
-            }
-          ]
-        });
-        addUser(inputNameRef.current?.value)
-        setInputValue('');
-        history.push('/chat')
-      }
+        name: inputNameRef.current?.value,
+        isTyping: false,
+        answerCorrect: 0,
+        heart: [
+          {
+            key: `heart${inputNameRef.current?.value}1` 
+          },
+          {
+            key: `heart${inputNameRef.current?.value}2` 
+          },
+          {
+            key: `heart${inputNameRef.current?.value}3` 
+          }
+        ]
+      });
+      setInputValue('');
+    }
   }, [newSocket]);
 
   useEffect(() => {
     inputNameRef.current?.focus();
   }, []);
+  
+   useEffect(() => {
+    const findMyUser = usersData.find(user => user.name === userLogin);
+    if(findMyUser) {
+      addUser(userLogin);
+      history.push('/chat')
+    }
+  }, [usersData]);
 
   return (
     <Container>
