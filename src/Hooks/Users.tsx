@@ -69,6 +69,7 @@ const UsersProvider: React.FC = ({ children }) => {
     newSocket?.on('users', (users: User[]) => {
       setUsersData(users);
     });
+    console.log(usersData);
   },[newSocket, usersData]);
 
   useEffect(() => {
