@@ -20,7 +20,7 @@ const SignIn: React.FC = () => {
   const history = useHistory();
 
   const handleJoinToRoom = useCallback((event) => {
-    if(inputNameRef.current?.value){
+    if(inputNameRef.current?.value !== 'Admin'){
       newSocket?.emit('join', {
         id: v4(),
         name: inputNameRef.current?.value,
@@ -38,6 +38,9 @@ const SignIn: React.FC = () => {
           }
         ]
       });
+    }
+    if(inputNameRef.current?.value === 'Admin') {
+      history.push('/chat');
     }
   }, [newSocket]);
 
