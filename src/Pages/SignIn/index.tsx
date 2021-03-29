@@ -22,7 +22,6 @@ const SignIn: React.FC = () => {
 
   const handleJoinToRoom = useCallback((event) => {
     if(inputNameRef.current?.value){
-      userLogin = inputNameRef.current?.value;
       newSocket?.emit('join', {
         id: v4(),
         name: inputNameRef.current?.value,
@@ -40,7 +39,6 @@ const SignIn: React.FC = () => {
           }
         ]
       });
-      setInputValue('');
     }
   }, [newSocket]);
 
@@ -49,12 +47,12 @@ const SignIn: React.FC = () => {
   }, []);
   
    useEffect(() => {
-    const findMyUser = usersData.find(user => user.name === userLogin);
-    if(findMyUser) {
-      addUser(userLogin);
+    const findMyUser = usersData.find(user => user.name === inputNameRef.current?.value);
+    if(findMyUser && inputNameRef.current?.value) {
+      addUser(inputNameRef.current?.value);
       history.push('/chat')
     }
-    console.log(findMyUser);
+    console.log(inputNameRef.current?.value, findMyUser);
   }, [usersData]);
 
   return (
