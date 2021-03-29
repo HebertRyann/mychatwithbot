@@ -54,6 +54,7 @@ const SignIn: React.FC = () => {
       addUser(userLogin);
       history.push('/chat')
     }
+    console.log(findMyUser);
   }, [usersData]);
 
   return (

@@ -272,7 +272,7 @@ const Chat: React.FC = () => {
       setMessages(updatedMessages);
     })
     console.log(messages);
-  }, [newSocket]);
+  }, [newSocket, messages]);
 
   return (
     <Container>
@@ -346,7 +346,7 @@ const Chat: React.FC = () => {
         )}
 
         {isOpeModalActiveGameQuest && user !== 'Admin' && (
-          <OverlayModal onClick={() => newSocket?.emit('setOpenModalActiveGameQuest')}>
+          <OverlayModal onClick={() => closeModal()}>
             <Conffeti
               height={height}
               width={width}
