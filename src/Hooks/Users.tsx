@@ -69,7 +69,6 @@ const UsersProvider: React.FC = ({ children }) => {
     newSocket?.on('users', (users: User[]) => {
       setUsersData(users);
     });
-    console.log(usersData);
   },[newSocket, usersData]);
 
   useEffect(() => {
@@ -88,7 +87,6 @@ const UsersProvider: React.FC = ({ children }) => {
     newSocket?.once('UpdateUserHangman', (userUpdated: HeartHangmanProps[]) => {
       setHeartsForHangman(userUpdated);
     })
-    console.log(heartsForHangman);
   }, [newSocket, heartsForHangman]);
 
   useEffect(() => {

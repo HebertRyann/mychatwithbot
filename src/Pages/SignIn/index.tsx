@@ -18,7 +18,6 @@ const SignIn: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const { addUser, newSocket, usersData } = useUser();
   const history = useHistory();
-    let userLogin = '';
 
   const handleJoinToRoom = useCallback((event) => {
     if(inputNameRef.current?.value){
