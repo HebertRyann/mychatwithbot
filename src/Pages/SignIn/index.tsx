@@ -40,7 +40,9 @@ const SignIn: React.FC = () => {
       });
     }
     if(inputNameRef.current?.value === 'Admin') {
-      history.push('/chat');
+      newSocket?.emit('join', { name: 'Admin' });
+      addUser(inputNameRef.current?.value);
+      history.push('/chat')
     }
   }, [newSocket]);
 
