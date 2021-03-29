@@ -277,10 +277,16 @@ const Chat: React.FC = () => {
     })
   }, [newSocket, messages]);
 
+  useEffect(() => {
+    newSocket?.once('SetScrollAutoOff', (scrollOff: boolean) => {
+      setScrollAutoOff(scrollOff);
+    })
+  }, [newSocket, scrollAutoOff]);
+
   return (
     <Container>
     
-      <ChatContainer onScroll={() => setScrollAutoOff(false)}>
+      <ChatContainer onScroll={() => setScrollAutoOff(true)}>
         
       {passwrodHang.length> 1 && (
           <ContainerHp>
