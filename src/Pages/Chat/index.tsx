@@ -271,6 +271,7 @@ const Chat: React.FC = () => {
     newSocket?.once('UpdatedAllMessages', (updatedMessages: MessageProps[]) => {
       setMessages(updatedMessages);
     })
+    console.log(messages);
   }, [newSocket]);
 
   return (
