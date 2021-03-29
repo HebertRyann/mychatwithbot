@@ -214,10 +214,12 @@ const Chat: React.FC = () => {
     newSocket?.once('userIsTyping', (userTyping: UserTyping[]) => {
       setOtherUserIsTyping(userTyping);
     });
-    lastMessageIsTypingRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end',
-    })
+    if(!scrollAutoOff){
+      lastMessageIsTypingRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      })
+    }
   }, [newSocket, otherUserIsTyping]);
 
   useEffect(() => {
@@ -286,7 +288,7 @@ const Chat: React.FC = () => {
   return (
     <Container>
     
-      <ChatContainer onScroll={() => setScrollAutoOff(true)}>
+      <ChatContainer>
         
       {passwrodHang.length> 1 && (
           <ContainerHp>
