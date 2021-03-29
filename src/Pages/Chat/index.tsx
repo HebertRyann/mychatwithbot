@@ -257,13 +257,14 @@ const Chat: React.FC = () => {
   }, [newSocket, isOpeModalActiveGameQuest]);
 
   useEffect(() => {
+    console.log(scrollAutoOff);
     if(!scrollAutoOff) {
       lastMessageRef.current?.scrollIntoView({ 
         behavior: 'smooth',
         block: 'end',
       });
     }
-  },[messages]);
+  },[messages, scrollAutoOff]);
 
   function closeModal() {
     setIsOpeModalActiveGameQuest(false);
@@ -279,7 +280,7 @@ const Chat: React.FC = () => {
   return (
     <Container>
     
-      <ChatContainer  onScroll={() => console.log('scroll is false')}>
+      <ChatContainer onScroll={() => setScrollAutoOff(false)}>
         
       {passwrodHang.length> 1 && (
           <ContainerHp>
