@@ -270,7 +270,7 @@ const Chat: React.FC = () => {
 
   function closeModal() {
     setIsOpeModalActiveGameQuest(false);
-    newSocket?.emit('setOpenModalActiveGameQuest', user);
+    newSocket?.emit('setCloseModal', user);
   };
     
   useEffect(() => {
