@@ -262,6 +262,17 @@ const Chat: React.FC = () => {
     });
   },[messages]);
 
+  function closeModal() {
+    setIsOpeModalActiveGameQuest(false);
+    newSocket?.emit('setOpenModalActiveGameQuest', user);
+  };
+    
+  useEffect(() => {
+    newSocket?.once('UpdatedAllMessages', (updatedMessages: MessageProps[]) => {
+      setMessages(updatedMessages);
+    })
+  }, [newSocket]);
+
   return (
     <Container>
     
