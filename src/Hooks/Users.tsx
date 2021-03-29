@@ -57,7 +57,7 @@ const UsersProvider: React.FC = ({ children }) => {
   const [newSocket, setNewSocket] = useState<Socket>();
   
   useEffect(() => {
-    const socket = io('https://7c37b5732d99.ngrok.io');
+    const socket = io('https://05bd833fdac4.ngrok.io');
     setNewSocket(socket);
   }, []);
 
