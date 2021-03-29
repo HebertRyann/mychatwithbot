@@ -274,13 +274,12 @@ const Chat: React.FC = () => {
     newSocket?.once('UpdatedAllMessages', (updatedMessages: MessageProps[]) => {
       setMessages(updatedMessages);
     })
-    console.log(messages);
   }, [newSocket, messages]);
 
   return (
     <Container>
     
-      <ChatContainer  onScroll={() => setScrollAutoOff(true)}>
+      <ChatContainer  onScroll={() => console.log('scroll is false')}>
         
       {passwrodHang.length> 1 && (
           <ContainerHp>
