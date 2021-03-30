@@ -26,17 +26,7 @@ const SignIn: React.FC = () => {
         name: inputNameRef.current?.value,
         isTyping: false,
         answerCorrect: 0,
-        heart: [
-          {
-            key: `heart${inputNameRef.current?.value}1` 
-          },
-          {
-            key: `heart${inputNameRef.current?.value}2` 
-          },
-          {
-            key: `heart${inputNameRef.current?.value}3` 
-          }
-        ]
+        heart: []
       });
     }
     if(inputNameRef.current?.value === 'Admin') {
@@ -45,17 +35,7 @@ const SignIn: React.FC = () => {
         name: 'Admin',
         isTyping: false,
         answerCorrect: 0,
-        heart: [
-          {
-            key: `heartAdmin1` 
-          },
-          {
-            key: `heartAdmin2` 
-          },
-          {
-            key: `heartAdmin3` 
-          }
-        ]
+        heart: []
       });
       addUser(inputNameRef.current?.value);
       history.push('/chat')
