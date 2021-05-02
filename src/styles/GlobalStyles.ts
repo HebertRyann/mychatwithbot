@@ -9,6 +9,7 @@ const GlobalStyles = createGlobalStyle`
     font-family: 'Roboto Slab', sans-serif;
     ::-webkit-scrollbar {
       display: none;
+      scroll-behavior: smooth;
     }
   }
   body {

@@ -10,11 +10,10 @@ export const Header = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 10px;
   width: 100%;
   height: 100px;
   background: #28262e;
-  margin-bottom: 20px;
+  padding: 0 20px;
   p {
     display: flex;
     align-items: center;
@@ -24,21 +23,33 @@ export const Header = styled.header`
     border-radius: 50%;
     background: orange; 
   }
+  div.Perfil {
+    display: flex;
+    align-items: center;
+    p {
+      margin-right: 10px;
+    }
+    span {
+      font-size: 16px;
+      font-weight: 500;
+      color: #9760DA;
+    }
+  }
 `;
 
 export const ContainerFriends = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-
-  button {
+  padding: 0 10px;
+  overflow: auto;
+  button {  
     display: flex;
     align-items: center;
     height: 70px;
     border-radius: 3px;
-    padding: 0 10px;
     background: transparent;
-
+    margin: 20px 0;
     color: #fff;
     
     > p {
@@ -88,7 +99,7 @@ export const ContainerNewChat = styled.div`
   align-items: center;
   justify-content: center;
   position: fixed;
-  bottom: 20px;
+  bottom: 10px;
   right: 15px;
   background: #6F2DBD;
   border-radius: 50%;
