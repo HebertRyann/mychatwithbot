@@ -38,5 +38,4 @@ export const FormContainer = styled.div`
   }
 `;
 
-export const WrraperInput = styled.div`
-`;
+export const WrraperInput = styled.div``;

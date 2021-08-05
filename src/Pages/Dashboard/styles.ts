@@ -1,9 +1,12 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import { animated } from 'react-spring';
+import { purple, blackBG } from '../../styles/Colors';
 
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: auto;
 `;
 
 export const Header = styled.header`
@@ -21,7 +24,7 @@ export const Header = styled.header`
     height: 50px;
     width: 50px;
     border-radius: 50%;
-    background: orange; 
+    background: orange;
   }
   div.Perfil {
     display: flex;
@@ -32,7 +35,7 @@ export const Header = styled.header`
     span {
       font-size: 16px;
       font-weight: 500;
-      color: #9760DA;
+      color: ${purple};
     }
   }
 `;
@@ -43,7 +46,7 @@ export const ContainerFriends = styled.div`
   height: 100%;
   padding: 0 10px;
   overflow: auto;
-  button {  
+  button {
     display: flex;
     align-items: center;
     height: 70px;
@@ -51,7 +54,7 @@ export const ContainerFriends = styled.div`
     background: transparent;
     margin: 20px 0;
     color: #fff;
-    
+
     > p {
       display: flex;
       align-items: center;
@@ -101,9 +104,162 @@ export const ContainerNewChat = styled.div`
   position: fixed;
   bottom: 10px;
   right: 15px;
-  background: #6F2DBD;
+  background: ${purple};
   border-radius: 50%;
   width: 56px;
   height: 56px;
   margin: auto;
+`;
+
+export const ModalNotifications = styled.div`
+  display: flex;
+  background: #312e38;
+  border-radius: 8px;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  flex-direction: column;
+  padding: 0 30px 0 10px;
+  overflow: auto;
+  transition: all 0.5;
+  button {
+    display: flex;
+    align-items: center;
+    height: 70px;
+    border-radius: 3px;
+    background: transparent;
+    margin: 20px 0;
+    color: #fff;
+
+    > p {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: turquoise;
+    }
+    div.ContentUser {
+      display: flex;
+      flex-direction: column;
+      margin-left: 20px;
+      flex: 1;
+      div.TitleUser {
+        display: flex;
+        align-items: center;
+        strong {
+          text-align: left;
+          margin-bottom: 5px;
+          font-size: 16px;
+          width: 100%;
+        }
+      }
+    }
+  }
+  > div.ContentUser {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0px 20px 20px;
+    strong {
+      font-size: 22px;
+      color: #fff;
+    }
+  }
+`;
+
+export const ContainerModalCreateGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  background: ${blackBG};
+  input {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 2px solid ${purple};
+    margin: 40px 0;
+    height: 60px;
+    width: 90vw;
+    font-size: 18px;
+    padding-left: 15px;
+    color: #fff;
+  }
+  button {
+    background: ${purple};
+    border-radius: 5px;
+    height: 60px;
+    width: 170px;
+    margin: 0px auto;
+    font-size: 18px;
+  }
+  div.ContainerUsers {
+    height: 50vh;
+    overflow: auto;
+  }
+  div.ContainerListSelectUsers {
+    display: flex;
+    align-items: center;
+    height: 70px;
+    border-radius: 3px;
+    background: transparent;
+    margin: 20px 0;
+    color: #fff;
+    width: 85vw;
+
+    > p {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: turquoise;
+    }
+    div.ContentUser {
+      display: flex;
+      flex-direction: column;
+      margin-left: 20px;
+      flex: 1;
+      div.TitleUser {
+        display: flex;
+        align-items: center;
+        strong {
+          text-align: left;
+          margin-bottom: 5px;
+          font-size: 16px;
+          width: 100%;
+        }
+      }
+    }
+    &.ContainerAddFriendSelected {
+      background: ${purple};
+    }
+  }
+  > div.ContentUser {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0px 20px 20px;
+    strong {
+      font-size: 22px;
+      color: #fff;
+    }
+  }
+  div.ContentHeader {
+    display: flex;
+    align-self: center;
+    justify-content: space-between;
+    width: 90%;
+    padding-left: 25px;
+    h1 {
+      font-size: 24px;
+      color: #fff;
+    }
+  }
 `;

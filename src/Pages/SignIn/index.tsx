@@ -1,49 +1,39 @@
-import React, { 
-  useCallback, 
-  useEffect, 
-  useRef, 
-  useState 
-} from 'react';
-import { 
-  Container, 
-  FormContainer,  
-} from './styles';
-import { 
-  useHistory,  
-} from 'react-router-dom';
-import { api } from '../../service/Api';
-
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Container, FormContainer } from './styles';
+import { useUser } from '../../Hooks/User';
 
 const SignIn: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
+  const { signIn } = useUser();
   const { push } = useHistory();
 
   async function handleConnection() {
-    if(!inputValue) return;
-    
+    if (!inputValue) return;
+
     try {
-      await api.post('/user', {
-        userName: inputValue,
-      });
+      await signIn(inputValue.toLowerCase());
       setInputValue('');
       push('/dashboard');
     } catch (error) {
-      console.log(error)
-      alert('Usuario nao foi criado tente novamente')
+      console.log(error);
+      alert('Usuario nao foi criado tente novamente');
     }
-
-  };
+  }
 
   return (
     <Container>
       <FormContainer>
-        <input 
-        type="text" 
-        placeholder='Seu Nome'
-        value={inputValue}
-        onChange={(event) => setInputValue(event.target.value)}
+        <input
+          type="text"
+          placeholder="Seu Nome"
+          value={inputValue}
+          onChange={event => setInputValue(event.target.value)}
+          onKeyPress={event => event.key === 'Enter' && handleConnection()}
         />
-        <button onClick={handleConnection}>Entrar</button>
+        <button onClick={handleConnection} type="button">
+          Entrar
+        </button>
       </FormContainer>
     </Container>
   );

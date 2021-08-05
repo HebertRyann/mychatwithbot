@@ -26,6 +26,9 @@ const GlobalStyles = createGlobalStyle`
     outline: 0;
     border: 0;
   }
+  span, strong, p {
+    text-transform: capitalize;
+  }
 `;
 
 export default GlobalStyles;
