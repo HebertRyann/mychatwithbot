@@ -2,18 +2,16 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import GlobalStyles from './styles/GlobalStyles';
 import Routes from './Router';
-import { UsersProvider } from './Hooks/Users';
-import { BotProvider } from './Hooks/Bot';
+import AppProvider from './Hooks';
+import Notification from './Components/Notification';
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-    <UsersProvider>
-      <BotProvider>
+      <AppProvider>
         <Routes />
         <GlobalStyles />
-      </BotProvider>
-    </UsersProvider>
+      </AppProvider>
     </BrowserRouter>
   );
 };
