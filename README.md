@@ -26,13 +26,16 @@
 <h2>
   
   <p>Dashboard</p>
-  <img alt="Dashboard MyChatWithBot" src="public/mychatdashboard.jpeg"/>
+    <div align="center">
+      <img alt="Dashboard MyChatWithBot" src="public/mychatdashboard.jpeg"/>
+    </div>
 </h2>
 
 <h2>
-  
   <p>Conversa</p>
-  <img alt="Cadastro MyChatWithBot" src="public/mychatchat.jpeg"/>
+    <div align="center">
+      <img alt="Cadastro MyChatWithBot" src="public/mychatchat.jpeg"/>
+    </div>
 </h2>
 
 
@@ -52,7 +55,7 @@ As seguintes ferramentas foram usadas na construção do projeto:
 ---
 - Paginas
   - [x] Pagina de Login
-  - [x] Pagina de Cadastro
+  - Pagina de Cadastro
   - [x] Pagina de Dashboard
     - [x] Adicionar Amigos
     - [x] Criar Grupos
@@ -60,7 +63,7 @@ As seguintes ferramentas foram usadas na construção do projeto:
   - [x] Pagina de Conversa
     - [x] Mensagens de audio
 - Jogos
-  - Forca
+  [ ] Forca
   - Adivinhe o Cantor
   - Quiz
 - Lojinha
