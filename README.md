@@ -60,10 +60,12 @@ As seguintes ferramentas foram usadas na construção do projeto:
     - [x] Adicionar Amigos
     - [x] Criar Grupos
     - [x] Acesso a Notificações
+  ---
   - [x] Pagina de Conversa
     - [x] Mensagens de audio
+  ---
 - Jogos
-  [ ] Forca
+  - Forca
   - Adivinhe o Cantor
   - Quiz
 - Lojinha
