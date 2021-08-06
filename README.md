@@ -18,19 +18,19 @@
 
 <h2>
   <p>Login</p>
-  <img alt="Login MyChatWithBot" src="public/mychatlogin.jpeg"/>
+  <img alt="Login MyChatWithBot" align="center" src="public/mychatlogin.jpeg"/>
 </h2>
 
 <h2>
   
   <p>Dashboard</p>
-  <img alt="Dashboard MyChatWithBot" src="public/mychatdashboard.jpeg"/>
+  <img alt="Dashboard MyChatWithBot" align="center" src="public/mychatdashboard.jpeg"/>
 </h2>
 
 <h2>
   
   <p>Conversa</p>
-  <img alt="Cadastro MyChatWithBot" src="public/mychatchat.jpeg"/>
+  <img alt="Cadastro MyChatWithBot" align="center" src="public/mychatchat.jpeg"/>
 </h2>
 
 
