@@ -31,4 +31,6 @@ export const Container = styled.div<IsShowProps>`
     css`
       animation: ${fadeOut} 1s ease-in-out;
     `}
+  width: 100vw;
+  height: 100vh;
 `;

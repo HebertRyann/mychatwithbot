@@ -15,13 +15,14 @@ export const Container = styled.div`
   display: flex;
   background: #312e38;
   border-radius: 8px;
-  height: 100vh;
+  height: 100%;
   width: 100vw;
-  position: relative;
+  position: absolute;
   flex-direction: column;
   padding: 0 30px 0 10px;
   overflow: auto;
   transition: all 0.5;
+  top: 0;
   button {
     display: flex;
     align-items: center;

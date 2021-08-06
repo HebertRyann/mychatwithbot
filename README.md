@@ -27,14 +27,14 @@
   
   <p>Dashboard</p>
     <div align="center">
-      <img alt="Dashboard MyChatWithBot" src="public/mychatdashboard.jpeg"/>
+      <img alt="Dashboard MyChatWithBot" src="public/mychatdashboard.gif"/>
     </div>
 </h2>
 
 <h2>
   <p>Conversa</p>
     <div align="center">
-      <img alt="Cadastro MyChatWithBot" src="public/mychatchat.jpeg"/>
+      <img alt="Cadastro MyChatWithBot" src="public/mychatchat.gif"/>
     </div>
 </h2>
 

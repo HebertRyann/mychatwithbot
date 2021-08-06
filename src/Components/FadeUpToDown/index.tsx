@@ -26,7 +26,7 @@ const FadeUpToDown: React.FC<FadeAnimationProps> = ({
       {isRender && (
         <Container
           show={isShow}
-          position={position}
+          position={position || 'absolute'}
           onAnimationEnd={onAnimationEnd}
         >
           {children}
