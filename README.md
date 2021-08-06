@@ -93,6 +93,9 @@ $ npm run start
 # A pagina web ficara disponivel localmente e voce pode acessar atraves de <http://localhost:3000>
 ```
 
+### 🎲 Rodar o Backend (Servidor)
+Navegue ate o repositorio do [Backend](https://github.com/HebertRyann/mychatwithbot). Siga o passo a passo
+
 ### Autor
 ---
 
