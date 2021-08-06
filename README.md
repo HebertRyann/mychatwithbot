@@ -18,26 +18,20 @@
 
 <h2>
   <p>Login</p>
-  <img alt="Login MyChatWithBot" src="./frontend/src/assets/betheherologin.jpeg"/>
+  <img alt="Login MyChatWithBot" src=".src/public/mychatlogin.jpeg"/>
 </h2>
 
-<!-- <h2>
+<h2>
   
   <p>Dashboard</p>
-  <img alt="Dashboard BeTheHero" src="./frontend/src/assets/betheherodashboard.jpeg"/>
+  <img alt="Dashboard MyChatWithBot" src=".src/public/mychatdashboard.jpeg"/>
 </h2>
 
 <h2>
   
-  <p>Cadastro de Ong</p>
-  <img alt="Cadastro BeTheHero" src="./frontend/src/assets/betheherosignup.jpeg"/>
+  <p>Conversa</p>
+  <img alt="Cadastro MyChatWithBot" src=".src/public/mychatchat.jpeg"/>
 </h2>
-
-<h2>
-  
-  <p>Cadastro de um novo caso</p>
-  <img alt="Novo Caso BeTheHero" src="./frontend/src/assets/betheheronew.jpeg"/>
-</h2> -->
 
 
 <p align="center">
@@ -62,11 +56,12 @@ As seguintes ferramentas foram usadas na construção do projeto:
     - [x] Criar Grupos
     - [x] Acesso a Notificações
   - [x] Pagina de Conversa
+    - [x] Mensagens de audio
 - Jogos
-  - [] Forca
-  - [] Adivinhe o Cantor
-  - [] Quiz
-- Loja de poderes
+  - Forca
+  - Adivinhe o Cantor
+  - Quiz
+- Lojinha
   
 
 ## Teste Local
