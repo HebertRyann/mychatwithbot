@@ -94,7 +94,7 @@ $ npm run start
 ```
 
 ### 🎲 Rodar o Backend (Servidor)
-## Navegue ate o repositorio do [Backend](https://github.com/HebertRyann/mychatwithbot-backend). Siga o passo a passo
+## Navegue até o repositório  do [Backend](https://github.com/HebertRyann/mychatwithbot-backend). Siga o passo a passo
 
 ### Autor
 ---
